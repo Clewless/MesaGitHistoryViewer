@@ -1,0 +1,40 @@
+# MesaGitHistoryViewer .gitignore
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+tests/__pycache__/
+*.log
+*.tmp
+*.bak
+
+# Mesa repository (auto-downloaded on first use)
+mesa/
+
+# Generated caches and application artifacts
+Mesa_Deep_Dive.txt
+Mesa_Summaries.txt
+README.txt
+
+# Environment and secrets
+.env
+.env.*
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Certificates/private keys
+*.pem
+*.key
+*.p12
+*.crt
+
+# Build/dist
+build/
+dist/
+*.egg-info/

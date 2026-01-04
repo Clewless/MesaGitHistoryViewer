@@ -1,0 +1,22 @@
+[project]
+name = "mesa-git-history-viewer"
+version = "0.3a0"
+
+[tool.ruff]
+# Target Python 3.9+
+target-version = "py39"
+
+# Reasonable line length
+line-length = 100
+
+[tool.ruff.lint]
+# Enable Pyflakes (F) and pycodestyle (E, W)
+select = ["F", "E", "W"]
+# Ignore "line too long" (E501) because wrapping comments is annoying
+ignore = ["E501"]
+
+[tool.mypy]
+# Strictness
+python_version = "3.9"
+strict = true
+ignore_missing_imports = true
