@@ -27,21 +27,22 @@
  ╚████╔╝ ██║███████╗╚███╔███╔╝███████╗██║  ██║
   ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
 ```
+(Mesa Git History Viewer)
 
-A desktop application for browsing Mesa's Git history with a local searchable database and release notes viewer.
+A GUI desktop application written in Python for intuitively browsing Mesa's Git history with a local searchable database and release notes viewer.
 
-## Why?
+## Motivations
 
-Mesa implements changes quickly over many releases. For developers who haven't kept up with development, it's time-consuming to search through every release's changelog. This tool lets you **Ctrl+F through the entire change history** within a timeframe to find specific changes instantly.
+Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time-consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single GUI.
 
 Also includes a tool to dump the last X months of logs into a clean list—handy for exporting to other tools or parsing in your text editor.
 
 ## Features
 
-### Deep Dive (History)
+### History (Deep Dive)
 Local, searchable table of the last 12 months of commits. Type keywords, commit hashes, or file changes to instantly filter results.
 
-### Summaries (Release Notes)
+### Release Notes (Summaries)
 Parses the `.rst` files from the Mesa docs folder so you can read release notes side-by-side with the history.
 
 ### Aggregated List Export
@@ -49,10 +50,10 @@ Grab the last X months of history and dump it into a text box. One-click copy to
 
 ## Screenshots
 
-### Deep Dive (History)
+### History (Deep Dive)
 ![History tab showing searchable commit table](screenshots/history-tab.png)
 
-### Summaries (Release Notes)
+### Release Notes (Summaries)
 ![Summaries tab with release notes viewer](screenshots/summaries-tab.png)
 
 ### Aggregated List Export
@@ -62,8 +63,8 @@ Grab the last X months of history and dump it into a text box. One-click copy to
 
 - **Python 3.9** or higher
 - **Git** (in your PATH)
-- **tkinter** (usually included with Python)
-- **Supported on**: Windows, macOS, and Linux (Fedora, Arch, Ubuntu, Debian)
+- **tkinter**
+- **Supported on**: Windows, macOS, and Linux
 
 ## Installation & Setup
 
@@ -83,9 +84,8 @@ Choose the script for your OS:
 - **Linux**: Run `bash Run-Viewer-Linux.sh`
 - **macOS**: Run `bash Run-Viewer-Mac.sh`
 
-**First time?** Click "Download/Update Mesa Repo" to fetch the Mesa source code (may take a few minutes on first run).
+**On first launch** Click "Download/Update Mesa Repo" to fetch the Mesa source code (may take a few minutes on first run).
 
-> **Note**: Launcher scripts can be run from any working directory; the application uses its own code location to find cache and repo files.
 
 ## Troubleshooting: Tcl/Tk and tkinter
 
@@ -152,8 +152,8 @@ python mesa_viewer.py --diagnose --fix
 
 ## License
 
-Open source. Use it however you want.
+idk it's open source
 
 ## Notes
 
-This project was vibe coded with human oversight.
+This project was vibe coded with human oversight (in case it wasn't obvious.)
