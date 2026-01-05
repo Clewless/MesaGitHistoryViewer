@@ -10,7 +10,7 @@ from typing import List, Tuple, Dict, Any, Optional
 import logging
 
 # Version
-VERSION = "0.3a0"
+VERSION = "0.3.1a0"
 
 try:
     import tkinter as tk

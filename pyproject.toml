@@ -1,6 +1,6 @@
 [project]
 name = "mesa-git-history-viewer"
-version = "0.3a0"
+version = "0.3.1a0"
 
 [tool.ruff]
 # Target Python 3.9+
