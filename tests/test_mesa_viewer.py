@@ -24,7 +24,6 @@ def tk_root():
 
 def test_app_initialization(tk_root):
     """Test that the application initializes without errors."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -35,7 +34,7 @@ def test_app_initialization(tk_root):
             assert app.root is not None
             # Ensure that when pointing to an empty base_dir, no data is loaded
             app.base_dir = temp_dir
-            app.deep_dive_file = os.path.join(temp_dir, "Mesa_Deep_Dive.txt")
+            app.changelog_history_file = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
             app.summaries_file = os.path.join(temp_dir, "Mesa_Summaries.txt")
             app.load_data()
             assert app.full_history_data == []
@@ -47,27 +46,26 @@ def test_app_initialization(tk_root):
 
 def test_data_parsing_valid_format(tk_root):
     """Test parsing of valid data format."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
-    temp_deep_dive = os.path.join(temp_dir, "Mesa_Deep_Dive.txt")
+    temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
 
     try:
-        # Create a sample deep dive file with valid format - following git log format
+        # Create a sample changelog history file with valid format - following git log format
         # Format: Date | Message (hash) - where message should not contain parentheses, hash is hex
         sample_data = """2023-01-01 | Initial commit (abc123de)
 2023-01-02 | Add feature (def456ab)
 2023-01-03 | Fix bug (fedcba98)"""
 
-        with open(temp_deep_dive, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
             f.write(sample_data)
 
         with patch('os.getcwd', return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
-            app.deep_dive_file = temp_deep_dive
+            app.changelog_history_file = temp_changelog_history
             app.load_data()
 
             assert len(app.full_history_data) == 3
@@ -86,25 +84,24 @@ def test_data_parsing_valid_format(tk_root):
 
 def test_data_parsing_alternative_format(tk_root):
     """Test parsing of alternative data format."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
-    temp_deep_dive = os.path.join(temp_dir, "Mesa_Deep_Dive.txt")
+    temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
 
     try:
-        # Create a sample deep dive file with alternative format
+        # Create a sample changelog history file with alternative format
         sample_data = """2023-01-01 | Initial commit without hash
 2023-01-02 | Another commit without hash"""
 
-        with open(temp_deep_dive, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
             f.write(sample_data)
 
         with patch('os.getcwd', return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
-            app.deep_dive_file = temp_deep_dive
+            app.changelog_history_file = temp_changelog_history
             app.load_data()
 
             assert len(app.full_history_data) == 2
@@ -122,21 +119,20 @@ def test_data_parsing_alternative_format(tk_root):
 
 def test_data_parsing_empty_file(tk_root):
     """Test parsing of empty file."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
-    temp_deep_dive = os.path.join(temp_dir, "Mesa_Deep_Dive.txt")
+    temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
 
     try:
-        with open(temp_deep_dive, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
             f.write('')
 
         with patch('os.getcwd', return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
-            app.deep_dive_file = temp_deep_dive
+            app.changelog_history_file = temp_changelog_history
             app.load_data()
 
             assert len(app.full_history_data) == 0
@@ -147,14 +143,13 @@ def test_data_parsing_empty_file(tk_root):
 
 def test_data_parsing_malformed_lines(tk_root):
     """Test parsing when some lines are malformed."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
-    temp_deep_dive = os.path.join(temp_dir, "Mesa_Deep_Dive.txt")
+    temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
 
     try:
-        # Create a sample deep dive file with some malformed lines
+        # Create a sample changelog history file with some malformed lines
         # Format: Date | Message (hash) - where message should not contain parentheses, hash is hex
         sample_data = """2023-01-01 | Valid commit (abc123de)
 This line is malformed
@@ -162,14 +157,14 @@ This line is malformed
 Another malformed line
 2023-01-03 | Final valid commit (fedcba98)"""
 
-        with open(temp_deep_dive, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
             f.write(sample_data)
 
         with patch('os.getcwd', return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
-            app.deep_dive_file = temp_deep_dive
+            app.changelog_history_file = temp_changelog_history
             app.load_data()
 
             # Should only parse the valid lines
@@ -189,7 +184,6 @@ Another malformed line
 
 def test_filter_history(tk_root):
     """Test the history filtering functionality."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -232,7 +226,6 @@ def test_filter_history(tk_root):
 
 def test_filter_history_empty_query(tk_root):
     """Test that empty query shows all data."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -267,7 +260,6 @@ def test_filter_history_empty_query(tk_root):
 
 def test_generate_agg_list(tk_root):
     """Test the aggregated list generation functionality."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -308,7 +300,6 @@ def test_generate_agg_list(tk_root):
 
 def test_generate_agg_list_invalid_months(tk_root):
     """Test aggregated list generation with invalid months input."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -333,7 +324,6 @@ def test_generate_agg_list_invalid_months(tk_root):
 
 def test_copy_to_clipboard(tk_root):
     """Test the clipboard copy functionality."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -365,7 +355,6 @@ def test_copy_to_clipboard(tk_root):
 
 def test_copy_to_clipboard_empty_content(tk_root):
     """Test clipboard copy with empty content."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -397,7 +386,6 @@ def test_copy_to_clipboard_empty_content(tk_root):
 
 def test_ui_widgets_exist(tk_root):
     """Test that UI widgets are created properly."""
-    import tkinter as tk
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
@@ -416,7 +404,6 @@ def test_ui_widgets_exist(tk_root):
 
 def test_smoke_test(tk_root):
     """Basic smoke test to ensure the app can be instantiated."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
@@ -433,7 +420,7 @@ def test_smoke_test(tk_root):
 
 def test_compute_cutoff_date():
     """Test compute_cutoff_date helper with deterministic 'now'."""
-    from mesa_viewer import MesaViewerApp, run_diagnostics
+    from mesa_viewer import MesaViewerApp
     from datetime import datetime
     # March 31st example to ensure day clipping to 28 works
     now = datetime(2024, 3, 31)
@@ -457,7 +444,6 @@ def test_run_diagnostics_basic():
 
 def test_summaries_parsing_tolerant(tk_root):
     """Ensure the summaries parser tolerates spacing and different '=' counts."""
-    import tkinter as tk
     import shutil
     root = tk_root
     temp_dir = tempfile.mkdtemp()
@@ -472,8 +458,8 @@ def test_summaries_parsing_tolerant(tk_root):
             from mesa_viewer import MesaViewerApp
             app = MesaViewerApp(root)
             app.summaries_file = temp_summaries
-            # Trigger parsing via filter_history (summaries parsing runs inside filter_history)
-            app.filter_history()
+            # Trigger parsing manually since we changed the file path after init
+            app.load_summaries()
 
             assert '1.2' in app.summaries_data
             assert '2.0' in app.summaries_data

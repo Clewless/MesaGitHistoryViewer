@@ -1,3 +1,14 @@
+import subprocess
+import os
+import threading
+import re
+import shutil
+import sys
+import platform
+from datetime import datetime
+from typing import List, Tuple, Dict, Any, Optional
+import logging
+
 # Version
 VERSION = "0.3a0"
 
@@ -14,17 +25,6 @@ except Exception:
     scrolledtext = None
     TclError = Exception
     TK_AVAILABLE = False
-
-import subprocess
-import os
-import threading
-import re
-import shutil
-import sys
-import platform
-from datetime import datetime, timedelta
-from typing import List, Tuple, Dict, Any, Optional
-import logging
 
 
 def run_diagnostics() -> Dict[str, Any]:
@@ -251,7 +251,7 @@ class MesaViewerApp:
             # Use the script location so launcher scripts can be executed from any working directory
             self.base_dir = os.path.dirname(os.path.abspath(__file__))
             self.mesa_dir = os.path.join(self.base_dir, "mesa")
-            self.deep_dive_file = os.path.join(self.base_dir, "Mesa_Deep_Dive.txt")
+            self.changelog_history_file = os.path.join(self.base_dir, "Mesa_Changelog_History.txt")
             self.summaries_file = os.path.join(self.base_dir, "Mesa_Summaries.txt")
 
             # Check for git availability and warn the user if missing
@@ -266,7 +266,7 @@ class MesaViewerApp:
             self.summaries_data: Dict[str, str] = {}
 
             self.setup_ui()
-            
+
             # Check if Mesa repo exists; if not, offer to download it
             if not os.path.isdir(self.mesa_dir):
                 self.prompt_download_mesa()
@@ -305,7 +305,7 @@ class MesaViewerApp:
             self.notebook.pack(expand=True, fill=tk.BOTH, padx=5, pady=5)
 
             self.history_frame = ttk.Frame(self.notebook)
-            self.notebook.add(self.history_frame, text="Deep Dive (History)")
+            self.notebook.add(self.history_frame, text="Changelog History")
             self.setup_history_tab()
 
             self.summaries_frame = ttk.Frame(self.notebook)
@@ -478,7 +478,7 @@ class MesaViewerApp:
             if os.path.exists(self.mesa_dir):
                 self.log_status("Updating Mesa repository...")
                 # If repo exists, just pull the latest
-                result = subprocess.run(
+                subprocess.run(
                     ["git", "-C", self.mesa_dir, "pull"],
                     check=True,
                     capture_output=True,
@@ -488,18 +488,18 @@ class MesaViewerApp:
             else:
                 self.log_status("Cloning Mesa repository (this may take a while)...")
                 # Clone the repository
-                result = subprocess.run(
+                subprocess.run(
                     ["git", "clone", "https://gitlab.freedesktop.org/mesa/mesa.git", self.mesa_dir],
                     check=True,
                     capture_output=True,
                     text=True
                 )
                 self.log_status("Mesa repository downloaded successfully.")
-            
+
             # Refresh the data after download
             self.log_status("Generating history and summaries...")
-            self.log_status("Generating Deep Dive Log...")
-            with open(self.deep_dive_file, "w", encoding="utf-8") as f:
+            self.log_status("Generating Changelog History...")
+            with open(self.changelog_history_file, "w", encoding="utf-8") as f:
                 subprocess.run(
                     ["git", "-C", self.mesa_dir, "log", "--since=12 months ago", "--pretty=format:%ad | %s (%h)", "--date=short"],
                     stdout=f,
@@ -564,9 +564,9 @@ class MesaViewerApp:
                 subprocess.run(["git", "-C", self.mesa_dir, "pull"],
                                       check=True, capture_output=True, text=True)
 
-            self.log_status("Generating Deep Dive Log...")
+            self.log_status("Generating Changelog History...")
             # Dump last year of history into cache file
-            with open(self.deep_dive_file, "w", encoding="utf-8") as f:
+            with open(self.changelog_history_file, "w", encoding="utf-8") as f:
                 subprocess.run(
                     ["git", "-C", self.mesa_dir, "log", "--since=12 months ago", "--pretty=format:%ad | %s (%h)", "--date=short"],
                     stdout=f,
@@ -672,9 +672,9 @@ class MesaViewerApp:
         try:
             # Parse history cache
             self.full_history_data = []
-            if os.path.exists(self.deep_dive_file):
+            if os.path.exists(self.changelog_history_file):
                 try:
-                    with open(self.deep_dive_file, "r", encoding="utf-8", errors='replace') as f:
+                    with open(self.changelog_history_file, "r", encoding="utf-8", errors='replace') as f:
                         for line_num, line in enumerate(f, 1):
                             try:
                                 line = line.strip()
@@ -690,10 +690,10 @@ class MesaViewerApp:
                                     if len(parts) == 2:
                                         self.full_history_data.append((parts[0], "?", parts[1]))
                             except Exception as e:
-                                logging.warning(f"Error parsing line {line_num} in deep dive file: {e}")
+                                logging.warning(f"Error parsing line {line_num} in changelog history file: {e}")
                                 continue
                 except Exception as e:
-                    logging.error(f"Error reading deep dive file: {e}")
+                    logging.error(f"Error reading changelog history file: {e}")
 
             # Load summaries data
             self.load_summaries()
@@ -715,7 +715,7 @@ class MesaViewerApp:
                 try:
                     with open(self.summaries_file, "r", encoding="utf-8", errors='replace') as f:
                         content = f.read()
-                    
+
                     pattern = re.compile(r"^\s*=+\s*\n\s*RELEASE:\s*([\d\.]+)\s*\n\s*=+\s*\n", flags=re.IGNORECASE | re.MULTILINE)
                     parts = pattern.split(content)
                     if len(parts) > 1:

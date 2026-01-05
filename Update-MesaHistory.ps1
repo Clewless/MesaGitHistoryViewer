@@ -1,6 +1,6 @@
 # Configuration
 $repoPath = ".\mesa"
-$deepDiveFile = ".\Mesa_Deep_Dive.txt"
+$changelogHistoryFile = ".\Mesa_Changelog_History.txt"
 $summariesFile = ".\Mesa_Summaries.txt"
 
 # 1. Update Repository
@@ -14,10 +14,10 @@ if (Test-Path $repoPath) {
     exit
 }
 
-# 2. Generate Deep Dive Log (Raw Git History)
-Write-Host "Generating Deep Dive Log (Last 12 Months)..."
+# 2. Generate Changelog History Log (Raw Git History)
+Write-Host "Generating Changelog History Log (Last 12 Months)..."
 # Uses git log to capture everything, formatted as: YYYY-MM-DD | Message (Hash)
-git -C $repoPath log --since="12 months ago" --pretty=format:"%ad | %s (%h)" --date=short | Out-File -FilePath $deepDiveFile -Encoding utf8
+git -C $repoPath log --since="12 months ago" --pretty=format:"%ad | %s (%h)" --date=short | Out-File -FilePath $changelogHistoryFile -Encoding utf8
 
 # 3. Generate Summaries (Compiled Release Notes)
 Write-Host "Compiling Release Notes (Top 50 newest)..."
@@ -47,5 +47,5 @@ foreach ($file in $relNotes) {
 
 Write-Host "--------------------------------------------------"
 Write-Host "Done!"
-Write-Host "   1. Raw History:    $deepDiveFile"
+Write-Host "   1. Raw History:    $changelogHistoryFile"
 Write-Host "   2. Release Notes:  $summariesFile"

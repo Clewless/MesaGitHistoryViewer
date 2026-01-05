@@ -39,7 +39,7 @@ Also includes a tool to dump the last X months of logs into a clean list—handy
 
 ## Features
 
-### History (Deep Dive)
+### Changelog History
 Local, searchable table of the last 12 months of commits. Type keywords, commit hashes, or file changes to instantly filter results.
 
 ### Release Notes (Summaries)
@@ -50,7 +50,7 @@ Grab the last X months of history and dump it into a text box. One-click copy to
 
 ## Screenshots
 
-### History (Deep Dive)
+### Changelog History
 ![History tab showing searchable commit table](screenshots/history-tab.png)
 
 ### Release Notes (Summaries)
