@@ -31,6 +31,9 @@
 
 A GUI desktop application written in Python for intuitively browsing Mesa's Git history with a local searchable database and release notes viewer.
 
+Mesa3D Git commit viewer
+Mesa updates history browser
+
 ## Motivations
 
 Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time-consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single GUI.
