@@ -477,27 +477,32 @@ class MesaViewerApp:
         try:
             if os.path.exists(self.mesa_dir):
                 self.log_status("Updating Mesa repository...")
+                print("Updating Mesa repository...")
                 # If repo exists, just pull the latest
+                # Remove capture_output to let git show progress in terminal
                 subprocess.run(
                     ["git", "-C", self.mesa_dir, "pull"],
                     check=True,
-                    capture_output=True,
                     text=True
                 )
                 self.log_status("Mesa repository updated successfully.")
+                print("Mesa repository updated successfully.")
             else:
                 self.log_status("Cloning Mesa repository (this may take a while)...")
+                print("Cloning Mesa repository (this may take a while)...")
                 # Clone the repository
+                # Remove capture_output to let git show progress in terminal
                 subprocess.run(
                     ["git", "clone", "https://gitlab.freedesktop.org/mesa/mesa.git", self.mesa_dir],
                     check=True,
-                    capture_output=True,
                     text=True
                 )
                 self.log_status("Mesa repository downloaded successfully.")
+                print("Mesa repository downloaded successfully.")
 
             # Refresh the data after download
             self.log_status("Generating history and summaries...")
+            print("Generating history and summaries...")
             self.log_status("Generating Changelog History...")
             with open(self.changelog_history_file, "w", encoding="utf-8") as f:
                 subprocess.run(
@@ -512,6 +517,7 @@ class MesaViewerApp:
             self.generate_summaries_python()
 
             self.log_status("Download and processing complete.")
+            print("Download and processing complete.")
             try:
                 if self.root.winfo_exists():
                     self.root.after(0, lambda: (self.load_data(), self.update_tree(self.full_history_data)))
@@ -519,6 +525,7 @@ class MesaViewerApp:
                 pass
         except subprocess.CalledProcessError as e:
             self.log_status("Download failed.")
+            print(f"Download failed: {e}")
             error_msg = f"Git command failed: {e}"
             if hasattr(e, 'stderr') and e.stderr:
                 error_msg += f"\n{e.stderr}"
@@ -530,6 +537,7 @@ class MesaViewerApp:
                 pass
         except FileNotFoundError:
             self.log_status("Git not found.")
+            print("Git not found.")
             error_msg = "Git is not installed or not in PATH. Please install Git and try again."
             logging.error(error_msg)
             try:
@@ -539,6 +547,7 @@ class MesaViewerApp:
                 pass
         except Exception as e:
             self.log_status("Download error.")
+            print(f"Download error: {e}")
             error_msg = f"Unexpected error during download: {e}"
             logging.error(error_msg)
             try:
@@ -556,15 +565,18 @@ class MesaViewerApp:
     def run_refresh_logic(self) -> None:
         try:
             self.log_status("Updating Repository...")
+            print("Updating Repository...")
             if not os.path.exists(self.mesa_dir):
                 self.log_status("Cloning repo (this may take a while)...")
+                print("Cloning repo (this may take a while)...")
                 subprocess.run(["git", "clone", "https://gitlab.freedesktop.org/mesa/mesa.git", self.mesa_dir],
-                                      check=True, capture_output=True, text=True)
+                                      check=True, text=True)
             else:
                 subprocess.run(["git", "-C", self.mesa_dir, "pull"],
-                                      check=True, capture_output=True, text=True)
+                                      check=True, text=True)
 
             self.log_status("Generating Changelog History...")
+            print("Generating Changelog History...")
             # Dump last year of history into cache file
             with open(self.changelog_history_file, "w", encoding="utf-8") as f:
                 subprocess.run(
@@ -579,6 +591,7 @@ class MesaViewerApp:
             self.generate_summaries_python()
 
             self.log_status("Refresh Complete.")
+            print("Refresh Complete.")
             try:
                 if self.root.winfo_exists():
                     self.root.after(0, lambda: (self.load_data(), self.update_tree(self.full_history_data)))
@@ -586,6 +599,7 @@ class MesaViewerApp:
                 pass
         except subprocess.CalledProcessError as e:
             self.log_status("Git pull failed.")
+            print(f"Git pull failed: {e}")
             error_msg = f"Git command failed: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}" if hasattr(e, 'stdout') and hasattr(e, 'stderr') else f"Git command failed: {e}"
             logging.error(error_msg)
             try:
@@ -595,6 +609,7 @@ class MesaViewerApp:
                 pass
         except FileNotFoundError:
             self.log_status("Git command not found.")
+            print("Git command not found.")
             error_msg = "Git is not installed or not in PATH. Please install Git and try again."
             logging.error(error_msg)
             try:
@@ -604,6 +619,7 @@ class MesaViewerApp:
                 pass
         except Exception as e:
             self.log_status("Refresh error.")
+            print(f"Refresh error: {e}")
             error_msg = f"Unexpected error during refresh: {e}"
             logging.error(error_msg)
             try:
