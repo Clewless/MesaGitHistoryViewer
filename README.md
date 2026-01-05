@@ -1,3 +1,13 @@
+# Mesa Git History Viewer
+
+A GUI desktop application written in Python for browsing the **Mesa3D** graphics library source history. It provides a local database and release notes viewer for tracking **OpenGL** and **Vulkan** driver changes, including **RADV**, **ANV**, and **Gallium3D**.
+
+## Motivations
+
+Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time-consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single GUI.
+
+Also includes a tool to dump the last X months of logs into a clean list—handy for exporting to other tools or parsing in your text editor.
+
 ```
 ███╗   ███╗███████╗███████╗ █████╗ 
 ████╗ ████║██╔════╝██╔════╝██╔══██╗
@@ -27,20 +37,8 @@
  ╚████╔╝ ██║███████╗╚███╔███╔╝███████╗██║  ██║
   ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
 ```
-# Mesa Git History Viewer
-
 (Mesa Git History Viewer)
 
-A GUI desktop application written in Python for intuitively browsing Mesa's Git history with a local searchable database and release notes viewer.
-
-Mesa3D Git commit viewer
-Mesa updates history browser
-
-## Motivations
-
-Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time-consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single GUI.
-
-Also includes a tool to dump the last X months of logs into a clean list—handy for exporting to other tools or parsing in your text editor.
 
 ## Features
 
@@ -157,7 +155,7 @@ python mesa_viewer.py --diagnose --fix
 
 ## License
 
-idk it's open source
+This project has been released into the public domain. See [UNLICENSE](UNLICENSE) for details.
 
 ## Notes
 
