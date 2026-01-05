@@ -27,6 +27,8 @@
  ╚████╔╝ ██║███████╗╚███╔███╔╝███████╗██║  ██║
   ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
 ```
+# Mesa Git History Viewer
+
 (Mesa Git History Viewer)
 
 A GUI desktop application written in Python for intuitively browsing Mesa's Git history with a local searchable database and release notes viewer.
