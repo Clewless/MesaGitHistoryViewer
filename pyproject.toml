@@ -1,6 +1,6 @@
 [project]
 name = "mesa-git-history-viewer"
-version = "0.3.1a0"
+version = "0.3.2a0"
 
 [tool.ruff]
 # Target Python 3.9+
@@ -10,13 +10,31 @@ target-version = "py39"
 line-length = 100
 
 [tool.ruff.lint]
-# Enable Pyflakes (F) and pycodestyle (E, W)
-select = ["F", "E", "W"]
+# Enable Pyflakes (F), pycodestyle (E, W), flake8-bugbear (B),
+# flake8-comprehensions (C4), and flake8-simplify (SIM)
+select = ["F", "E", "W", "B", "C4", "SIM"]
 # Ignore "line too long" (E501) because wrapping comments is annoying
 ignore = ["E501"]
 
 [tool.mypy]
 # Strictness
-python_version = "3.9"
+python_version = "3.13"
 strict = true
 ignore_missing_imports = true
+
+# Exclude the Mesa repository files to avoid duplicate module errors
+exclude = [
+    "mesa/"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--ignore=run_mypy_output.py",
+    "--ignore=run_ruff_output.py",
+    "--ignore=debug_run.py",
+    "--ignore=debug_viewer.py"
+]

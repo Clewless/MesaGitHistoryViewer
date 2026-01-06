@@ -38,3 +38,7 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+
+# Output files from analysis tools
+mypy_output_*.txt
+ruff_output_*.txt

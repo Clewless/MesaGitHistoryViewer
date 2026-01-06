@@ -24,8 +24,9 @@ elif [[ "$OS" == "arch" || "$OS" == "manjaro" ]]; then
     sudo pacman -Syu --noconfirm python python-pip tk git
 else
     echo "Unsupported distribution: $OS"
-    echo "Please manually install: python3, python3-pip, python3-tk (or tk), and git."
-    echo "Then run this script again or run 'python3 -m pip install -r requirements-dev.txt' manually."
+    echo "Please manually install the following packages: python3, python3-pip, python3-tk, and git."
+    echo "After installing the dependencies, run the following command:"
+    echo "python3 -m pip install -r requirements-dev.txt"
     exit 1
 fi
 

@@ -8,36 +8,35 @@ Mesa implements changes iteratively over many releases. For people who haven't c
 
 Also includes a tool to dump the last X months of logs into a clean list—handy for exporting to other tools or parsing in your text editor.
 
-```
-███╗   ███╗███████╗███████╗ █████╗ 
-████╗ ████║██╔════╝██╔════╝██╔══██╗
-██╔████╔██║█████╗  ███████╗███████║
-██║╚██╔╝██║██╔══╝  ╚════██║██╔══██║
-██║ ╚═╝ ██║███████╗███████║██║  ██║
-╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
-                                   
-██████╗ ██╗████████╗
-██╔════╝ ██║╚══██╔══╝
-██║  ███╗██║   ██║   
-██║   ██║██║   ██║   
-╚██████╔╝██║   ██║   
- ╚═════╝ ╚═╝   ╚═╝   
+```diff
++ ███╗   ███╗███████╗███████╗ █████╗
++ ████╗ ████║██╔════╝██╔════╝██╔══██╗
++ ██╔████╔██║█████╗  ███████╗███████║
++ ██║╚██╔╝██║██╔══╝  ╚════██║██╔══██║
++ ██║ ╚═╝ ██║███████╗███████║██║  ██║
++ ╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
 
-██╗  ██╗██╗███████╗████████╗ ██████╗ ██████╗ ██╗   ██╗
-██║  ██║██║██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝
-███████║██║███████╗   ██║   ██║   ██║██████╔╝ ╚████╔╝ 
-██╔══██║██║╚════██║   ██║   ██║   ██║██╔══██╗  ╚██╔╝  
-██║  ██║██║███████║   ██║   ╚██████╔╝██║  ██║   ██║   
-╚═╝  ╚═╝╚═╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
+- ██████╗ ██╗████████╗
+- ██╔════╝ ██║╚══██╔══╝
+- ██║  ███╗██║   ██║
+- ██║   ██║██║   ██║
+- ╚██████╔╝██║   ██║
+-  ╚═════╝ ╚═╝   ╚═╝
 
-██╗   ██╗██╗███████╗██╗    ██╗███████╗██████╗ 
-██║   ██║██║██╔════╝██║    ██║██╔════╝██╔══██╗
-██║   ██║██║█████╗  ██║ █╗ ██║█████╗  ██████╔╝
-╚██╗ ██╔╝██║██╔══╝  ██║███╗██║██╔══╝  ██╔══██╗
- ╚████╔╝ ██║███████╗╚███╔███╔╝███████╗██║  ██║
-  ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
++ ██╗  ██╗██╗███████╗████████╗ ██████╗ ██████╗ ██╗   ██╗
++ ██║  ██║██║██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝
++ ███████║██║███████╗   ██║   ██║   ██║██████╔╝ ╚████╔╝
++ ██╔══██║██║╚════██║   ██║   ██║   ██║██╔══██╗  ╚██╔╝
++ ██║  ██║██║███████║   ██║   ╚██████╔╝██║  ██║   ██║
++ ╚═╝  ╚═╝╚═╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+
+- ██╗   ██╗██╗███████╗██╗    ██╗███████╗██████╗
+- ██║   ██║██║██╔════╝██║    ██║██╔════╝██╔══██╗
+- ██║   ██║██║█████╗  ██║ █╗ ██║█████╗  ██████╔╝
+- ╚██╗ ██╔╝██║██╔══╝  ██║███╗██║██╔══╝  ██╔══██╗
+-  ╚████╔╝ ██║███████╗╚███╔███╔╝███████╗██║  ██║
+-   ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
 ```
-(Mesa Git History Viewer)
 
 
 ## Features
@@ -68,6 +67,11 @@ Grab the last X months of history and dump it into a text box. One-click copy to
 - **Git** (in your PATH)
 - **tkinter**
 - **Supported on**: Windows, macOS, and Linux
+
+For macOS (including Apple Silicon M1/M2/M3), ensure you have:
+- **Homebrew** installed (https://brew.sh/)
+- **Xcode Command Line Tools** (run `xcode-select --install` in Terminal)
+- **Python 3.9+ with tkinter** (install via Homebrew: `brew install python`)
 
 ## Installation & Setup
 
@@ -108,6 +112,15 @@ sudo pacman -S tk
 brew install python
 # or ensure your Python distribution includes Tk support;
 # ActiveTcl may be required in some setups
+
+# macOS Apple Silicon (M1/M2/M3) specific issues:
+# If you encounter tkinter issues on Apple Silicon:
+# 1. Check your Python architecture:
+python3 -c "import platform; print(platform.machine())"
+# 2. Ensure you have ARM64 Python via Homebrew:
+brew install python@3.11  # or latest version
+# 3. If issues persist, reinstall Python:
+brew uninstall python@3.11 && brew install python@3.11
 
 # Windows
 # Reinstall Python from python.org and ensure

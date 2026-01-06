@@ -17,10 +17,10 @@ def tk_root():
     except TclError:
         pytest.skip("Tkinter not available on this system")
     yield root
-    try:
+    from contextlib import suppress
+    with suppress(Exception):
         root.destroy()
-    except Exception:
-        pass
+
 
 def test_app_initialization(tk_root):
     """Test that the application initializes without errors."""
@@ -28,8 +28,9 @@ def test_app_initialization(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             assert app.root is not None
             # Ensure that when pointing to an empty base_dir, no data is loaded
@@ -47,6 +48,7 @@ def test_app_initialization(tk_root):
 def test_data_parsing_valid_format(tk_root):
     """Test parsing of valid data format."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
     temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
@@ -58,11 +60,12 @@ def test_data_parsing_valid_format(tk_root):
 2023-01-02 | Add feature (def456ab)
 2023-01-03 | Fix bug (fedcba98)"""
 
-        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, "w", encoding="utf-8") as f:
             f.write(sample_data)
 
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
             app.changelog_history_file = temp_changelog_history
@@ -71,9 +74,9 @@ def test_data_parsing_valid_format(tk_root):
             assert len(app.full_history_data) == 3
             # The order might be different, so let's check that all expected items are present
             expected_items = [
-                ('2023-01-01', 'abc123de', 'Initial commit'),
-                ('2023-01-02', 'def456ab', 'Add feature'),
-                ('2023-01-03', 'fedcba98', 'Fix bug')
+                ("2023-01-01", "abc123de", "Initial commit"),
+                ("2023-01-02", "def456ab", "Add feature"),
+                ("2023-01-03", "fedcba98", "Fix bug"),
             ]
             for expected in expected_items:
                 assert expected in app.full_history_data
@@ -85,6 +88,7 @@ def test_data_parsing_valid_format(tk_root):
 def test_data_parsing_alternative_format(tk_root):
     """Test parsing of alternative data format."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
     temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
@@ -94,11 +98,12 @@ def test_data_parsing_alternative_format(tk_root):
         sample_data = """2023-01-01 | Initial commit without hash
 2023-01-02 | Another commit without hash"""
 
-        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, "w", encoding="utf-8") as f:
             f.write(sample_data)
 
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
             app.changelog_history_file = temp_changelog_history
@@ -107,8 +112,8 @@ def test_data_parsing_alternative_format(tk_root):
             assert len(app.full_history_data) == 2
             # Check that both items are present (order may vary)
             expected_items = [
-                ('2023-01-01', '?', 'Initial commit without hash'),
-                ('2023-01-02', '?', 'Another commit without hash')
+                ("2023-01-01", "?", "Initial commit without hash"),
+                ("2023-01-02", "?", "Another commit without hash"),
             ]
             for expected in expected_items:
                 assert expected in app.full_history_data
@@ -120,16 +125,18 @@ def test_data_parsing_alternative_format(tk_root):
 def test_data_parsing_empty_file(tk_root):
     """Test parsing of empty file."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
     temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
 
     try:
-        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
-            f.write('')
+        with open(temp_changelog_history, "w", encoding="utf-8") as f:
+            f.write("")
 
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
             app.changelog_history_file = temp_changelog_history
@@ -144,6 +151,7 @@ def test_data_parsing_empty_file(tk_root):
 def test_data_parsing_malformed_lines(tk_root):
     """Test parsing when some lines are malformed."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
     temp_changelog_history = os.path.join(temp_dir, "Mesa_Changelog_History.txt")
@@ -157,11 +165,12 @@ This line is malformed
 Another malformed line
 2023-01-03 | Final valid commit (fedcba98)"""
 
-        with open(temp_changelog_history, 'w', encoding='utf-8') as f:
+        with open(temp_changelog_history, "w", encoding="utf-8") as f:
             f.write(sample_data)
 
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Manually call load_data to test parsing
             app.changelog_history_file = temp_changelog_history
@@ -171,9 +180,9 @@ Another malformed line
             assert len(app.full_history_data) == 3
             # Check that all expected valid items are present
             expected_items = [
-                ('2023-01-01', 'abc123de', 'Valid commit'),
-                ('2023-01-02', 'def456ab', 'Another valid commit'),
-                ('2023-01-03', 'fedcba98', 'Final valid commit')
+                ("2023-01-01", "abc123de", "Valid commit"),
+                ("2023-01-02", "def456ab", "Another valid commit"),
+                ("2023-01-03", "fedcba98", "Final valid commit"),
             ]
             for expected in expected_items:
                 assert expected in app.full_history_data
@@ -188,17 +197,18 @@ def test_filter_history(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Ensure summaries parsing is not triggered by pointing to a non-existent summaries file
             app.summaries_file = os.path.join(temp_dir, "Mesa_Summaries.txt")
 
             # Set up some test data
             app.full_history_data = [
-                ('2023-01-01', 'abc123def', 'Feature A implementation'),
-                ('2023-01-02', 'def456ghi', 'Bug fix for feature B'),
-                ('2023-01-03', 'ghi789jkl', 'Documentation update')
+                ("2023-01-01", "abc123def", "Feature A implementation"),
+                ("2023-01-02", "def456ghi", "Bug fix for feature B"),
+                ("2023-01-03", "ghi789jkl", "Documentation update"),
             ]
 
             # Mock the update_tree method to capture calls
@@ -206,7 +216,7 @@ def test_filter_history(tk_root):
 
             # Create the search_var attribute
             app.search_var = Mock()
-            app.search_var.get.return_value = 'feature'
+            app.search_var.get.return_value = "feature"
 
             # Test filtering by message content
             app.filter_history()
@@ -217,8 +227,8 @@ def test_filter_history(tk_root):
             call_args = app.update_tree.call_args[0][0]
             assert len(call_args) == 2  # Should have 2 items matching 'feature'
             messages = [item[2] for item in call_args]
-            assert 'Feature A implementation' in messages
-            assert 'Bug fix for feature B' in messages
+            assert "Feature A implementation" in messages
+            assert "Bug fix for feature B" in messages
     finally:
         root.destroy()
         os.rmdir(temp_dir)
@@ -230,13 +240,14 @@ def test_filter_history_empty_query(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Set up some test data
             app.full_history_data = [
-                ('2023-01-01', 'abc123def', 'Feature A implementation'),
-                ('2023-01-02', 'def456ghi', 'Bug fix for feature B')
+                ("2023-01-01", "abc123def", "Feature A implementation"),
+                ("2023-01-02", "def456ghi", "Bug fix for feature B"),
             ]
 
             # Mock the update_tree method to capture calls
@@ -244,7 +255,7 @@ def test_filter_history_empty_query(tk_root):
 
             # Create the search_var attribute
             app.search_var = Mock()
-            app.search_var.get.return_value = ''
+            app.search_var.get.return_value = ""
 
             # Test with empty query
             app.filter_history()
@@ -264,19 +275,20 @@ def test_generate_agg_list(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             # Set up some test data
             app.full_history_data = [
-                ('2023-01-01', 'abc123def', 'Feature A implementation'),
-                ('2023-06-01', 'def456ghi', 'Bug fix for feature B'),
-                ('2024-01-01', 'ghi789jkl', 'Documentation update')
+                ("2023-01-01", "abc123def", "Feature A implementation"),
+                ("2023-06-01", "def456ghi", "Bug fix for feature B"),
+                ("2024-01-01", "ghi789jkl", "Documentation update"),
             ]
 
             # Mock the months variable
             app.months_var = Mock()
-            app.months_var.get.return_value = '12'  # 12 months
+            app.months_var.get.return_value = "12"  # 12 months
 
             # Mock the agg_text widget
             app.agg_text = Mock()
@@ -304,16 +316,17 @@ def test_generate_agg_list_invalid_months(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
 
             # Mock the months variable to return invalid value
             app.months_var = Mock()
-            app.months_var.get.return_value = 'invalid'
+            app.months_var.get.return_value = "invalid"
 
             # Mock messagebox to capture the error
-            with patch('mesa_viewer.messagebox') as mock_msgbox:
+            with patch("mesa_viewer.messagebox") as mock_msgbox:
                 app.generate_agg_list()
                 # Should show an error message
                 mock_msgbox.showerror.assert_called_once()
@@ -328,13 +341,14 @@ def test_copy_to_clipboard(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
 
             # Mock the agg_text widget
             app.agg_text = Mock()
-            app.agg_text.get.return_value = 'Test content to copy'
+            app.agg_text.get.return_value = "Test content to copy"
 
             # Mock root clipboard methods
             app.root.clipboard_clear = Mock()
@@ -346,8 +360,8 @@ def test_copy_to_clipboard(tk_root):
 
             # Check that clipboard methods were called
             app.root.clipboard_clear.assert_called_once()
-            app.root.clipboard_append.assert_called_once_with('Test content to copy')
-            app.log_status.assert_called_once_with('Copied to clipboard.')
+            app.root.clipboard_append.assert_called_once_with("Test content to copy")
+            app.log_status.assert_called_once_with("Copied to clipboard.")
     finally:
         root.destroy()
         os.rmdir(temp_dir)
@@ -359,13 +373,14 @@ def test_copy_to_clipboard_empty_content(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
 
             # Mock the agg_text widget with empty content
             app.agg_text = Mock()
-            app.agg_text.get.return_value = ''
+            app.agg_text.get.return_value = ""
 
             # Mock root clipboard methods
             app.root.clipboard_clear = Mock()
@@ -378,7 +393,7 @@ def test_copy_to_clipboard_empty_content(tk_root):
             # Check that clipboard methods were NOT called
             app.root.clipboard_clear.assert_not_called()
             app.root.clipboard_append.assert_not_called()
-            app.log_status.assert_called_once_with('No content to copy.')
+            app.log_status.assert_called_once_with("No content to copy.")
     finally:
         root.destroy()
         os.rmdir(temp_dir)
@@ -390,12 +405,13 @@ def test_ui_widgets_exist(tk_root):
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
 
             # Check that main UI elements exist
-            assert hasattr(app, 'root')
+            assert hasattr(app, "root")
             # Note: These attributes are created during UI setup, so they should exist after initialization
     finally:
         root.destroy()
@@ -405,12 +421,14 @@ def test_ui_widgets_exist(tk_root):
 def test_smoke_test(tk_root):
     """Basic smoke test to ensure the app can be instantiated."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
 
     try:
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             assert app is not None
     finally:
@@ -422,6 +440,7 @@ def test_compute_cutoff_date():
     """Test compute_cutoff_date helper with deterministic 'now'."""
     from mesa_viewer import MesaViewerApp
     from datetime import datetime
+
     # March 31st example to ensure day clipping to 28 works
     now = datetime(2024, 3, 31)
     cutoff_1m = MesaViewerApp.compute_cutoff_date(1, now=now)
@@ -434,35 +453,38 @@ def test_compute_cutoff_date():
 def test_run_diagnostics_basic():
     """Ensure run_diagnostics returns a dictionary with expected keys."""
     from mesa_viewer import run_diagnostics
+
     info = run_diagnostics()
     assert isinstance(info, dict)
-    assert 'python_version' in info
-    assert 'tk_imported' in info
-    assert 'git_version' in info
-    assert 'base_dir' in info
+    assert "python_version" in info
+    assert "tk_imported" in info
+    assert "git_version" in info
+    assert "base_dir" in info
 
 
 def test_summaries_parsing_tolerant(tk_root):
     """Ensure the summaries parser tolerates spacing and different '=' counts."""
     import shutil
+
     root = tk_root
     temp_dir = tempfile.mkdtemp()
     temp_summaries = os.path.join(temp_dir, "Mesa_Summaries.txt")
 
     try:
         content = "\n   ====\n RELEASE: 1.2\n====\nThis is release 1.2\n\n  ===========\n  RELEASE: 2.0\n ===========\nSecond release\n"
-        with open(temp_summaries, 'w', encoding='utf-8') as f:
+        with open(temp_summaries, "w", encoding="utf-8") as f:
             f.write(content)
 
-        with patch('os.getcwd', return_value=temp_dir):
+        with patch("os.getcwd", return_value=temp_dir):
             from mesa_viewer import MesaViewerApp
+
             app = MesaViewerApp(root)
             app.summaries_file = temp_summaries
             # Trigger parsing manually since we changed the file path after init
             app.load_summaries()
 
-            assert '1.2' in app.summaries_data
-            assert '2.0' in app.summaries_data
+            assert "1.2" in app.summaries_data
+            assert "2.0" in app.summaries_data
     finally:
         root.destroy()
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -472,36 +494,43 @@ def test_get_remediation_suggestions_linux_apt(monkeypatch):
     """When apt is available on Linux, suggest python3-tk and git installs."""
     from mesa_viewer import get_remediation_suggestions
 
-    monkeypatch.setattr('mesa_viewer.platform.system', lambda: 'Linux')
-    monkeypatch.setattr('mesa_viewer.shutil.which', lambda name: '/usr/bin/apt' if name == 'apt' else None)
+    monkeypatch.setattr("mesa_viewer.platform.system", lambda: "Linux")
+    monkeypatch.setattr(
+        "mesa_viewer.shutil.which", lambda name: "/usr/bin/apt" if name == "apt" else None
+    )
 
-    info = {'tk_usable': False, 'git_path': None}
+    info = {"tk_usable": False, "git_path": None}
     suggestions = get_remediation_suggestions(info)
-    ids = {s['id'] for s in suggestions}
-    assert 'install-tk-apt' in ids
-    assert 'install-git-apt' in ids
+    ids = {s["id"] for s in suggestions}
+    assert "install-tk-apt" in ids
+    assert "install-git-apt" in ids
 
 
 def test_get_remediation_suggestions_macos_brew(monkeypatch):
     """When Homebrew is available on macOS, suggest brew-based installs."""
     from mesa_viewer import get_remediation_suggestions
 
-    monkeypatch.setattr('mesa_viewer.platform.system', lambda: 'Darwin')
-    monkeypatch.setattr('mesa_viewer.shutil.which', lambda name: '/usr/local/bin/brew' if name == 'brew' else None)
+    monkeypatch.setattr("mesa_viewer.platform.system", lambda: "Darwin")
+    monkeypatch.setattr(
+        "mesa_viewer.shutil.which", lambda name: "/usr/local/bin/brew" if name == "brew" else None
+    )
 
-    info = {'tk_usable': False, 'git_path': None}
+    info = {"tk_usable": False, "git_path": None}
     suggestions = get_remediation_suggestions(info)
-    ids = {s['id'] for s in suggestions}
-    assert 'install-python-brew' in ids
+    ids = {s["id"] for s in suggestions}
+    assert "install-python-brew" in ids
 
 
 def test_get_remediation_suggestions_none_needed(monkeypatch):
     """If tk is usable and git is present, there should be no suggestions."""
     from mesa_viewer import get_remediation_suggestions
 
-    monkeypatch.setattr('mesa_viewer.platform.system', lambda: 'Linux')
-    monkeypatch.setattr('mesa_viewer.shutil.which', lambda name: '/usr/bin/apt' if name == 'apt' else '/usr/bin/git' if name == 'git' else None)
+    monkeypatch.setattr("mesa_viewer.platform.system", lambda: "Linux")
+    monkeypatch.setattr(
+        "mesa_viewer.shutil.which",
+        lambda name: "/usr/bin/apt" if name == "apt" else "/usr/bin/git" if name == "git" else None,
+    )
 
-    info = {'tk_usable': True, 'git_path': '/usr/bin/git'}
+    info = {"tk_usable": True, "git_path": "/usr/bin/git"}
     suggestions = get_remediation_suggestions(info)
     assert suggestions == []

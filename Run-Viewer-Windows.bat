@@ -1,3 +1,3 @@
 @echo off
-REM Windows launcher for Mesa Git History Viewer
-python mesa_viewer.py
+REM This script is a wrapper for Run-Viewer.bat for backward compatibility.
+CALL "Run-Viewer.bat"
