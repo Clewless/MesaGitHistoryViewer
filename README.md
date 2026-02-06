@@ -4,7 +4,7 @@ A GUI desktop application written in Python for browsing the **Mesa3D** graphics
 
 ## Motivations
 
-Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time-consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single GUI.
+Mesa implements changes iteratively over many releases. For people who haven't consistently kept up with development, it's time consuming to search through every release's changelog, and the existing Git/terminal based solutions are clunky for non-developers. This tool lets you **Ctrl+F through the entire change history** within a specific timeframe to find changes instantly within a single, focused GUI for everyone.
 
 Also includes a tool to dump the last X months of logs into a clean list—handy for exporting to other tools or parsing in your text editor.
 
