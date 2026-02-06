@@ -17,6 +17,7 @@ try:
     import tkinter as tk
     from tkinter import ttk, messagebox, scrolledtext
     from tkinter import TclError
+    import tkinter.font as tkfont
 
     TK_AVAILABLE = True
 except Exception:
@@ -307,7 +308,30 @@ class MesaViewerApp:
         try:
             self.root = root
             self.root.title(f"Mesa Git History Viewer v{VERSION}")
-            self.root.geometry("1100x700")
+
+            # Set larger default size and make it scalable for high-DPI displays
+            self.root.geometry("1400x900")
+
+            # Configure DPI awareness for better scaling on high-resolution displays
+            try:
+                from ctypes import windll
+                windll.shcore.SetProcessDpiAwareness(1)  # DPI_AWARENESS_PER_MONITOR_AWARE
+            except:
+                pass  # Not on Windows or DPI awareness not available
+
+            # Set minimum window size
+            self.root.minsize(1200, 800)
+
+            # Configure default font scaling
+            default_font = tk.font.nametofont("TkDefaultFont")
+            default_font.configure(size=12)
+
+            # Configure heading font
+            heading_font = tk.font.nametofont("TkHeadingFont")
+            heading_font.configure(size=14, weight="bold")
+
+            # Configure global ttk style for better readability
+            self.configure_styles()
 
             # Local paths for repo and generated caches
             # Use the script location so launcher scripts can be executed from any working directory
@@ -343,6 +367,37 @@ class MesaViewerApp:
                 "Initialization Error", f"Failed to initialize the application: {e}"
             )
 
+    def configure_styles(self) -> None:
+        """Configure global ttk styles for better readability on high-DPI displays."""
+        try:
+            style = ttk.Style()
+
+            # Configure base font sizes
+            style.configure(".", font=('TkDefaultFont', 12))
+
+            # Button styling
+            style.configure("TButton", padding=10, font=('TkDefaultFont', 12))
+
+            # Label styling
+            style.configure("TLabel", font=('TkDefaultFont', 12))
+
+            # Notebook (tab) styling
+            style.configure("TNotebook", font=('TkDefaultFont', 12))
+            style.configure("TNotebook.Tab", padding=[20, 10], font=('TkDefaultFont', 12, 'bold'))
+
+            # Frame padding
+            style.configure("TFrame", padding=10)
+
+            # Treeview improvements
+            style.configure("Treeview", font=('TkDefaultFont', 12), rowheight=25)
+            style.map("Treeview", background=[("selected", "#0078d7")], foreground=[("selected", "white")])
+
+            # Scrollbar improvements
+            style.configure("TScrollbar", arrowsize=20)
+
+        except Exception as e:
+            logging.warning(f"Error configuring styles: {e}")
+
     def setup_ui(self) -> None:
         try:
             # Global controls
@@ -352,7 +407,7 @@ class MesaViewerApp:
             self.refresh_btn = ttk.Button(
                 toolbar, text="Refresh Data (Git Pull)", command=self.start_refresh
             )
-            self.refresh_btn.pack(side=tk.LEFT)
+            self.refresh_btn.pack(side=tk.LEFT, padx=(0, 10))
             if not getattr(self, "git_available", True):
                 self.refresh_btn.config(state=tk.DISABLED)
 
@@ -360,10 +415,10 @@ class MesaViewerApp:
             self.download_btn = ttk.Button(
                 toolbar, text="Download/Update Mesa Repo", command=self.start_download_mesa
             )
-            self.download_btn.pack(side=tk.LEFT, padx=5)
+            self.download_btn.pack(side=tk.LEFT, padx=10)
 
-            self.status_label = ttk.Label(toolbar, text="Ready", foreground="gray")
-            self.status_label.pack(side=tk.LEFT, padx=10)
+            self.status_label = ttk.Label(toolbar, text="Ready", foreground="gray", font=('TkDefaultFont', 12))
+            self.status_label.pack(side=tk.LEFT, padx=20)
 
             # Progress bar for downloads/refreshes (hidden by default)
             self.progress_bar = ttk.Progressbar(toolbar, mode="indeterminate", length=200)
@@ -394,26 +449,34 @@ class MesaViewerApp:
             search_frame = ttk.Frame(self.history_frame, padding="5")
             search_frame.pack(fill=tk.X)
 
-            ttk.Label(search_frame, text="Search:").pack(side=tk.LEFT)
+            ttk.Label(search_frame, text="Search:", font=('TkDefaultFont', 12)).pack(side=tk.LEFT, padx=(10, 5))
             self.search_var = tk.StringVar()
             # Prefer trace_add when available; fallback to legacy trace for compatibility
             try:
                 self.search_var.trace_add("write", lambda *a: self.filter_history())
             except AttributeError:
                 self.search_var.trace("w", lambda *a: self.filter_history())
-            self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=50)
-            self.search_entry.pack(side=tk.LEFT, padx=5)
+            self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=80, font=('TkDefaultFont', 12))
+            self.search_entry.pack(side=tk.LEFT, padx=5, pady=10)
 
-            # Main history table
+            # Main history table with improved sizing
             columns = ("date", "hash", "message")
             self.tree = ttk.Treeview(self.history_frame, columns=columns, show="headings")
-            self.tree.heading("date", text="Date")
-            self.tree.heading("hash", text="Hash")
-            self.tree.heading("message", text="Message")
 
-            self.tree.column("date", width=100, stretch=False)
-            self.tree.column("hash", width=100, stretch=False)
-            self.tree.column("message", width=600)
+            # Configure larger, more readable headings
+            self.tree.heading("date", text="Date")
+            self.tree.heading("hash", text="Commit Hash")
+            self.tree.heading("message", text="Commit Message")
+
+            # Wider columns for better readability
+            self.tree.column("date", width=150, stretch=False)
+            self.tree.column("hash", width=180, stretch=False)
+            self.tree.column("message", width=1000)
+
+            # Configure row height for better readability
+            style = ttk.Style()
+            style.configure("Treeview", rowheight=25)
+            style.configure("Treeview.Heading", font=('TkDefaultFont', 12, 'bold'))
 
             scrollbar = ttk.Scrollbar(
                 self.history_frame, orient=tk.VERTICAL, command=self.tree.yview
@@ -432,15 +495,15 @@ class MesaViewerApp:
             paned = ttk.PanedWindow(self.summaries_frame, orient=tk.HORIZONTAL)
             paned.pack(fill=tk.BOTH, expand=True)
 
-            left_frame = ttk.Frame(paned, width=200)
-            self.release_list = tk.Listbox(left_frame, selectmode=tk.SINGLE)
-            self.release_list.pack(fill=tk.BOTH, expand=True)
+            left_frame = ttk.Frame(paned, width=250)
+            self.release_list = tk.Listbox(left_frame, selectmode=tk.SINGLE, font=('TkDefaultFont', 12), height=30)
+            self.release_list.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
             self.release_list.bind("<<ListboxSelect>>", self.on_release_select)
             paned.add(left_frame, weight=1)
 
             right_frame = ttk.Frame(paned)
-            self.summary_text = scrolledtext.ScrolledText(right_frame, wrap=tk.WORD)
-            self.summary_text.pack(fill=tk.BOTH, expand=True)
+            self.summary_text = scrolledtext.ScrolledText(right_frame, wrap=tk.WORD, font=('TkDefaultFont', 12))
+            self.summary_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
             paned.add(right_frame, weight=4)
         except Exception as e:
             logging.error(f"Error setting up summaries tab: {e}")
@@ -452,15 +515,15 @@ class MesaViewerApp:
             controls_frame = ttk.Frame(self.agg_frame, padding="5")
             controls_frame.pack(fill=tk.X)
 
-            ttk.Label(controls_frame, text="Aggregate last").pack(side=tk.LEFT)
+            ttk.Label(controls_frame, text="Aggregate last", font=('TkDefaultFont', 12)).pack(side=tk.LEFT)
 
             self.months_var = tk.StringVar(value="1")
             months_spin = ttk.Spinbox(
-                controls_frame, from_=1, to=120, textvariable=self.months_var, width=5
+                controls_frame, from_=1, to=120, textvariable=self.months_var, width=5, font=('TkDefaultFont', 12)
             )
             months_spin.pack(side=tk.LEFT, padx=5)
 
-            ttk.Label(controls_frame, text="months").pack(side=tk.LEFT)
+            ttk.Label(controls_frame, text="months", font=('TkDefaultFont', 12)).pack(side=tk.LEFT)
 
             generate_btn = ttk.Button(
                 controls_frame, text="Generate List", command=self.generate_agg_list
@@ -472,12 +535,13 @@ class MesaViewerApp:
             )
             copy_btn.pack(side=tk.LEFT)
 
-            self.agg_text = scrolledtext.ScrolledText(self.agg_frame, wrap=tk.WORD)
-            self.agg_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+            self.agg_text = scrolledtext.ScrolledText(self.agg_frame, wrap=tk.WORD, font=('TkDefaultFont', 12))
+            self.agg_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
             ttk.Label(
                 self.agg_frame,
                 text="Select text and press Ctrl+C to copy, or Ctrl+A to select all.",
+                font=('TkDefaultFont', 10)
             ).pack(side=tk.BOTTOM, pady=5)
         except Exception as e:
             logging.error(f"Error setting up aggregated tab: {e}")
